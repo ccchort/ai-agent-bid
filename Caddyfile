@@ -1,4 +1,0 @@
-{$DOMAIN_NAME} {
-    reverse_proxy n8n:5678
-    tls {$SSL_EMAIL}
-}
