@@ -12,12 +12,18 @@ db = DataBase()
 async def cmd_start(message: Message):
     await message.answer("Привет!")
 
+@bid.business_message(F.text)
 @bid.message(F.text)
 async def bid_msg(message: Message):
-    accum_text = await db.get_from_db(UserSession, filters={"user_id": message.from_user.id})[0]
-    await db.add_to_db(UserSession, 
-                       {"user_id": message.from_user.id, 
-                        "platform": "Telegram", 
-                        "accumulated_text": accum_text + message.text,
-                        "last_message_at": func.now(),
-                        "client_name": message.from_user.full_name})
+    accum_text = await db.get_from_db(UserSession, filters={"user_id": int(message.from_user.id)})
+    if accum_text:
+        accum_text = accum_text[0].accumulated_text
+        await db.update_db(UserSession,
+                           filters={"user_id": int(message.from_user.id)}, 
+                           update_data={"accumulated_text": accum_text + " " + message.text, "last_message_at": func.now()})
+    else:
+        await db.add_to_db(UserSession(user_id=int(message.from_user.id), 
+                        platform="Telegram",
+                        accumulated_text=message.text,
+                        last_message_at=func.now(),
+                        client_name=message.from_user.full_name))

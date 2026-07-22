@@ -1,0 +1,36 @@
+services:
+  ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: python -m ai.main
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  telegram:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: python -m telegram.main
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  max:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    working_dir: /app
+    command: python -m max.main
+    volumes:
+      - .:/app
+    restart: unless-stopped

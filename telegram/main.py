@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 from config import config
-
+from telegram.handlers.bid import bid
 from aiogram.client.default import DefaultBotProperties
 from database.db import DataBase
 
@@ -18,14 +18,14 @@ async def main():
     storage = MemoryStorage()
 
 
-    proxy_url = "socks5://192.168.0.10:1080"
-    session = AiohttpSession(proxy=proxy_url) if proxy_url else None
-    bot = Bot(token=config.telegram_bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML), session=session)
+    #proxy_url = "socks5://192.168.0.10:1080"
+    #session = AiohttpSession(proxy=proxy_url) if proxy_url else None
+    bot = Bot(token=config.telegram_bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML), )#session=session)
     
     dp = Dispatcher(storage=storage)
     dp["db"] = db
 
-    dp.include_routers()    
+    dp.include_routers(bid)    
 
     await dp.start_polling(bot)
 

@@ -1,13 +1,13 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_
 from typing import Optional, Dict, List, Union
 
 from config import config
 
 # Конфигурация PostgreSQL
 DB_CONFIG = {
-    "protocol": "postgresql+asyncpg",
+    "protocol": "postgresql+asyncpg", #postgresql+psycopg
     "user": config.postgres_user.get_secret_value(),
     "password": config.postgres_password.get_secret_value(),
     "host": config.postgres_host.get_secret_value(),
@@ -68,7 +68,8 @@ class DataBase:
             limit: Optional[int] = None,
             join: Optional[Dict] = None,
             only_fields: Optional[List[str]] = None,
-            distinct: bool = False
+            distinct: bool = False,
+            where_clauses: Optional[List] = None
     ):
         """Асинхронная версия универсального запроса"""
         async with AsyncSessionLocal() as session:
@@ -79,6 +80,9 @@ class DataBase:
                 # Фильтрация
                 if filters:
                     stmt = stmt.filter_by(**filters)
+
+                if where_clauses:
+                    stmt = stmt.where(*where_clauses)
 
                 # Сортировка
                 if order_by:
