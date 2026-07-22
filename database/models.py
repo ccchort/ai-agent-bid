@@ -12,7 +12,7 @@ class UserSession(Base):
     __tablename__ = 'user_sessions'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(VARCHAR)
+    user_id = Column(Integer)
     platform = Column(VARCHAR)
     accumulated_text = Column(Text)
     created_at = Column(DateTime, server_default=func.now())
