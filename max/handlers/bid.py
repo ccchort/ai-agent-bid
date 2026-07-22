@@ -14,14 +14,14 @@ async def cmd_start(event: MessageCreated):
 
 @bid.message_created(F.message.body.text)
 async def bid_msg(event: MessageCreated):
-    accum_text = await db.get_from_db(UserSession, filters={"user_id": int(event.from_user.chat_id)})
+    accum_text = await db.get_from_db(UserSession, filters={"user_id": int(event.from_user.user_id)})
     if accum_text:
         accum_text = accum_text[0].accumulated_text
         await db.update_db(UserSession, 
                            filters={"user_id": int(event.from_user.chat_id)}, 
                            update_data={"accumulated_text": accum_text + " " + event.message.body.text, "last_message_at": func.now()})
     else:
-        await db.add_to_db(UserSession(user_id=int(event.from_user.chat_id), 
+        await db.add_to_db(UserSession(user_id=int(event.from_user.user_id), 
                         platform="Max",
                         accumulated_text=event.message.body.text,
                         last_message_at=func.now(),
