@@ -1,6 +1,6 @@
 from maxapi import F, Router
 from maxapi.types import MessageCreated
-from maxapi.filters import CommandStart
+from maxapi.filters.command import CommandStart
 from database.db import DataBase
 from database.models import UserSession
 from sqlalchemy.sql import func
@@ -8,11 +8,11 @@ from sqlalchemy.sql import func
 db = DataBase()
 bid = Router()
 
-@bid.message(CommandStart())
+@bid.message_created(CommandStart())
 async def cmd_start(event: MessageCreated):
     await event.message.answer("Привет!")
 
-@bid.message(F.message.body.text)
+@bid.message_created(F.message.body.text)
 async def bid_msg(event: MessageCreated):
     accum_text = await db.get_from_db(UserSession, filters={"user_id": int(event.from_user.chat_id)})
     if accum_text:
@@ -26,3 +26,4 @@ async def bid_msg(event: MessageCreated):
                         accumulated_text=event.message.body.text,
                         last_message_at=func.now(),
                         client_name=event.message.from_user.full_name))
+        
