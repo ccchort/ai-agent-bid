@@ -2,7 +2,7 @@ import asyncio
 import logging
 from maxapi import Bot, Dispatcher
 from config import config
-from max.handlers.bid import bid, 
+from max.handlers.bid import bid
 
 
 logging.basicConfig(level=logging.INFO)
