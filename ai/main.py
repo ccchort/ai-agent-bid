@@ -1,4 +1,6 @@
 import asyncio
+import logging
+import traceback
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import text
@@ -9,6 +11,7 @@ from database.models import UserSession
 from ai.add_bid import generate
 from ai.shit import insert_row_to_google_sheet
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 db = DataBase()
 
 def format_datetime(value):
@@ -46,12 +49,21 @@ async def check_user_sessions_job():
     stale_sessions = await get_stale_user_sessions()
 
     for session in stale_sessions:
-        data = await generate(session)
         try:
-            insert_row_to_google_sheet(data, json_key_path="./ai/bids-project-502021-d03d48f79611.json", spreadsheet_name="Регистрация обращений клиентов (Ответы)")
+            data = await generate(session)
+            if not data:
+                print(f"AI returned no data for user_id={session.get('user_id')}; session kept for retry")
+                continue
+
+            insert_row_to_google_sheet(
+                data,
+                json_key_path="./ai/bids-project-502021-d03d48f79611.json",
+                spreadsheet_name="Регистрация обращений клиентов (Ответы)"
+            )
             await db.delete_from_db(UserSession, filters={"user_id": session.get("user_id", None)})
-        except Exception as e:
-            print("Error: ", e)
+        except Exception:
+            print(f"check_user_sessions_job failed for user_id={session.get('user_id')}")
+            traceback.print_exc()
 
 
 

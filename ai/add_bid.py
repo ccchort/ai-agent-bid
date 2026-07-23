@@ -1,5 +1,6 @@
 import asyncio
 import json
+import traceback
 from yandex_ai_studio_sdk import AsyncAIStudio
 from config import config
 
@@ -92,16 +93,20 @@ async def generate(data: dict) -> list[dict]:
 
     try:
         result = await model.run(context)
-    except Exception as e:
-        print("Error:", e)
+    except Exception:
+        print("AI SDK exception traceback:")
+        traceback.print_exc()
         return []
 
     if not result or not getattr(result, 'text', None):
+        print("AI SDK returned empty result")
         return []
 
     try:
         payload = json.loads(result.text)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print("AI JSON decode error:", e)
+        print("AI raw text:", str(result.text)[:1000])
         return []
 
     if isinstance(payload, dict):
