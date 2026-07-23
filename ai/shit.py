@@ -1,38 +1,46 @@
 import gspread
 
-def insert_row_to_google_sheet(data_dict, json_key_path, spreadsheet_name, worksheet_name="Ответы на форму (1)"):
+def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы на форму (1)"):
     """
-    Принимает словарь с данными и вставляет его в Google Таблицу.
-    
-    :param data_dict: dict, данные для вставки (ключи должны совпадать со структурой колонок)
+    Принимает один словарь или список словарей с данными и вставляет их в Google Таблицу.
+
+    :param data: dict | list[dict], данные для вставки
     :param json_key_path: str, путь к вашему JSON-файлу с ключами от Google Cloud
     :param spreadsheet_name: str, название вашей Google Таблицы
-    :param worksheet_name: str, название конкретного листа (по умолчанию "Лист1")
+    :param worksheet_name: str, название конкретного листа
     """
+
+    if not data:
+        return
+
+    if isinstance(data, dict):
+        rows = [data]
+    else:
+        rows = data
 
     client = gspread.service_account(filename=json_key_path)
     
     # Открытие таблицы и листа
     sheet = client.open(spreadsheet_name).worksheet(worksheet_name)
     
-    # Строгое соответствие колонок структуре на скриншоте
-    row_data = [
-        data_dict.get("Отметка времени", ""),
-        data_dict.get("Дата (образец 27.04.2026)", ""),
-        data_dict.get("Канал обращения клиента", ""), # Обрезано на скрине: "Канал обращения клиента"
-        data_dict.get("От кого поступил запрос", ""), # Обрезано на скрине: "От кого поступил запрос"
-        data_dict.get("Обращение", ""),
-        data_dict.get("Документы", ""),
-        data_dict.get("Приоритет выполнения задачи для исполнителя", ""),
-        data_dict.get("Наименование клиента", ""), 
-        data_dict.get("Столбец 8", ""),            # Обрезано на скрине: "Наименование"
-        data_dict.get("Отметка о постановки задачи", False), # Чекбокс (True/False)
-        data_dict.get("Ссылка на задачу в битрикс", "")             # Обрезано на скрине: "Ссылка на..."
-    ]
-    
-    # Добавление строки в конец таблицы
-    sheet.append_row(row_data, value_input_option="USER_ENTERED")
-    print("Данные успешно добавлены!")
+    # Строгое соответствие колонок структуре
+    for data_dict in rows:
+        row_data = [
+            data_dict.get("Отметка времени", ""),
+            data_dict.get("Дата (образец 27.04.2026)", ""),
+            data_dict.get("Канал обращения клиента", ""),
+            data_dict.get("От кого поступил запрос", ""),
+            data_dict.get("Обращение", ""),
+            data_dict.get("Документы", ""),
+            data_dict.get("Приоритет выполнения задачи для исполнителя", ""),
+            data_dict.get("Наименование клиента", ""),
+            data_dict.get("Столбец 8", ""),
+            data_dict.get("Отметка о постановки задачи", False),
+            data_dict.get("Ссылка на задачу в битрикс", "")
+        ]
+
+        sheet.append_row(row_data, value_input_option="USER_ENTERED")
+    print(f"Данные успешно добавлены: {len(rows)} строк!")
 
 
 

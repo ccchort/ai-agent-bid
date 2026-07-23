@@ -21,7 +21,7 @@ async def bid_msg(event: MessageCreated):
                            filters={"user_id": int(event.get_ids()[1])}, 
                            update_data={"accumulated_text": accum_text + " " + event.message.body.text, "last_message_at": func.now()})
     else:
-        await db.add_to_db(UserSession(user_id=int(event.get_ids()[1]), 
+        await db.add_to_db(UserSession(user_id=int(event.get_ids()[1]),
                         platform="Max",
                         accumulated_text=event.message.body.text,
                         last_message_at=func.now(),
