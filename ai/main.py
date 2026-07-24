@@ -27,7 +27,7 @@ async def get_stale_user_sessions() -> list[dict]:
     rows = await DataBase.get_from_db(
         UserSession,
         where_clauses=[
-            UserSession.last_message_at < text("CURRENT_TIMESTAMP - INTERVAL '5 minutes'")
+            UserSession.last_message_at < text("CURRENT_TIMESTAMP - INTERVAL '3 minutes'")
         ]
     )
 
@@ -69,7 +69,7 @@ async def check_user_sessions_job():
 
 async def main():
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(check_user_sessions_job, "interval", minutes=1)
+    scheduler.add_job(check_user_sessions_job, "interval", seconds=30)
     scheduler.start()
 
     try:
