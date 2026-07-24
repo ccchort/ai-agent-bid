@@ -2,5 +2,5 @@
 .gitignore
 .env
 __pycache__/
-/ai/tender-415619-63538cc57fc8.json
-/ai/bids-project-502021-d03d48f79611.json
+/ai/info/tender-415619-63538cc57fc8.json
+/ai/info/bids-project-502021-d03d48f79611.json

@@ -1,6 +1,6 @@
 import gspread
 
-def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы на форму (1)"):
+def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы ИИ"):
     """
     Принимает один словарь или список словарей с данными и вставляет их в Google Таблицу.
 
