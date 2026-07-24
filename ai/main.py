@@ -4,8 +4,7 @@ import traceback
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from sqlalchemy import text
-from zoneinfo import ZoneInfo
-
+from utils.collector import format_datetime
 from database.db import DataBase
 from database.models import UserSession
 from ai.add_bid import generate
@@ -14,10 +13,7 @@ from ai.shit import insert_row_to_google_sheet
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 db = DataBase()
 
-def format_datetime(value):
-    if value is None:
-        return None
-    return value.astimezone(ZoneInfo("Europe/Samara")).strftime("%Y-%m-%d %H:%M:%S %z")
+
 
 
 async def get_stale_user_sessions() -> list[dict]:

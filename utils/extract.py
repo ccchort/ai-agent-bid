@@ -1,4 +1,5 @@
 import re
+import json
 from rapidfuzz import process, fuzz
 
 def clean_for_matching(name: str) -> str:
@@ -65,7 +66,7 @@ def match_company(client_name_from_chat: str, clients_list: list, partners_list:
     
     # Если зацепки нет ни там, ни там
     if client_score == 0 and partner_score == 0:
-        return "", ""
+        return "Нет в базе", "Нет в базе"
         
     # Возвращаем оригинал из того списка, где балл совпадения выше
     if client_score >= partner_score:
@@ -76,3 +77,9 @@ def match_company(client_name_from_chat: str, clients_list: list, partners_list:
         matched_cleaned_name = best_partner_match[0]
         original_name = cleaned_partners[matched_cleaned_name]
         return "Партнер", original_name
+
+
+def clean_json_str(ai_response):
+    clean = ai_response.strip().strip("`").replace("json\n", "").strip()
+    result = json.loads(clean)
+    return result
