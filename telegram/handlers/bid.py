@@ -12,7 +12,6 @@ db = DataBase()
 async def cmd_start(message: Message):
     await message.answer("Привет!")
 
-@bid.business_message(F.text)
 @bid.message(F.text)
 async def bid_msg(message: Message):
     if message.from_user.id in [804843834, 1796987260, 6399035001]:
@@ -28,4 +27,4 @@ async def bid_msg(message: Message):
                         platform="Telegram",
                         accumulated_text=message.text,
                         last_message_at=func.now(),
-                        client_name=message.from_user.full_name))
+                        client_name=message.chat.title))

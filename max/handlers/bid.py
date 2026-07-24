@@ -27,5 +27,5 @@ async def bid_msg(event: MessageCreated):
                         platform="Max",
                         accumulated_text=event.message.body.text,
                         last_message_at=func.now(),
-                        client_name=event.from_user.full_name))
+                        client_name=event.chat.title))
         
