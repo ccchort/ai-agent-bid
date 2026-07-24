@@ -14,6 +14,8 @@ async def cmd_start(event: MessageCreated):
 
 @bid.message_created(F.message.body.text)
 async def bid_msg(event: MessageCreated):
+    if int(event.get_ids()[1]) in [524968097, 477017355, 275156033]:
+        return
     accum_text = await db.get_from_db(UserSession, filters={"user_id": int(event.get_ids()[1])})
     if accum_text:
         accum_text = accum_text[0].accumulated_text
