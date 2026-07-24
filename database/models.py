@@ -18,5 +18,6 @@ class UserSession(Base):
     created_at = Column(DateTime, server_default=func.now())
     last_message_at = Column(DateTime, server_default=func.now())
     client_name = Column(Text)
+    actual = Column(Boolean, default=True)
 
 

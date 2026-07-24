@@ -24,6 +24,7 @@ def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_
     sheet = client.open(spreadsheet_name).worksheet(worksheet_name)
     
     # Строгое соответствие колонок структуре
+    formatted_rows = []
     for data_dict in rows:
         row_data = [
             data_dict.get("Отметка времени", ""),
@@ -38,8 +39,9 @@ def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_
             data_dict.get("Отметка о постановки задачи", False),
             data_dict.get("Ссылка на задачу в битрикс", "")
         ]
+        formatted_rows.append(row_data)
 
-        sheet.append_row(row_data, value_input_option="USER_ENTERED")
+    sheet.append_rows(formatted_rows, value_input_option="USER_ENTERED")
     print(f"Данные успешно добавлены: {len(rows)} строк!")
 
 
