@@ -1,4 +1,7 @@
+import asyncio
+
 import gspread
+from gspread.utils import ValidationConditionType
 
 def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы ИИ"):
     """
@@ -22,7 +25,8 @@ def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_
     
     # Открытие таблицы и листа
     sheet = client.open(spreadsheet_name).worksheet(worksheet_name)
-    
+
+    start_row = len(sheet.get_all_values()) + 1
     # Строгое соответствие колонок структуре
     formatted_rows = []
     for data_dict in rows:
@@ -41,22 +45,25 @@ def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_
         ]
         formatted_rows.append(row_data)
 
-    sheet.append_rows(formatted_rows, value_input_option="USER_ENTERED")
+    sheet.append_rows(formatted_rows, value_input_option="USER_ENTERED", table_range="A:K")
+
+
+    end_row = start_row + len(formatted_rows) - 1
+    if start_row == end_row:
+        checkbox_range = f"J{start_row}"
+    else:
+        checkbox_range = f"J{start_row}:J{end_row}"
+        
+    sheet.add_validation(
+        checkbox_range,
+        ValidationConditionType.boolean,
+        []
+    )
     print(f"Данные успешно добавлены: {len(rows)} строк!")
 
 
 
-# --- Пример использования ---
-# my_data = {
-#     "Отметка времени": "04-07-2026 17:56:24.289",
-#     "Дата": "04.07.2026",
-#     "Канал обращения клие": "Max",
-#     "От кого поступил запрc": "Клиент",
-#     "Обращение": "оплатить счет",
-#     "Документы": "Не указано",
-#     "Приоритет": "Нет",
-#     "Наименов": "Егор",
-#     "Отметка о постановки задачи": False,
-#     "Ссылка на": ""
-# }
-# insert_row_to_google_sheet(my_data, "credentials.json", "Название_Таблицы")
+my_data = [{'Отметка времени': '21.07.2026 22:33:05', 'Дата (образец 27.04.2026)': '21.07.2026', 'Канал обращения клиента': 'Telegram', 'От кого поступил запрос': 'Клиент', 'Обращение': 'Просьба выполнить задачу до 31.07.2026 г.', 'Документы': '', 'Приоритет выполнения задачи для исполнителя': 'Нет', 'Наименование клиента': 'Малуева А.А. ИП', 'Столбец 8': None, 'Отметка о постановки задачи': False, 'Ссылка на задачу в битрикс': None}]
+
+if __name__ == "__main__":
+    asyncio.run(insert_row_to_google_sheet(my_data, "./ai/info/bids-project-502021-d03d48f79611.json", "Регистрация обращений клиентов (Ответы)"))

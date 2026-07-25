@@ -66,7 +66,7 @@ def match_company(client_name_from_chat: str, clients_list: list, partners_list:
     
     # Если зацепки нет ни там, ни там
     if client_score == 0 and partner_score == 0:
-        return "Нет в базе", "Нет в базе"
+        return "Нет в базе", client_name_from_chat
         
     # Возвращаем оригинал из того списка, где балл совпадения выше
     if client_score >= partner_score:
