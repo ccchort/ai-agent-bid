@@ -1,9 +1,9 @@
 import asyncio
 
 import gspread
-from gspread.utils import ValidationConditionType
+from gspread.utils import ValueInputOption
 
-def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы ИИ"):
+async def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_name="Ответы ИИ"):
     """
     Принимает один словарь или список словарей с данными и вставляет их в Google Таблицу.
 
@@ -45,25 +45,15 @@ def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, worksheet_
         ]
         formatted_rows.append(row_data)
 
-    sheet.append_rows(formatted_rows, value_input_option="USER_ENTERED", table_range="A:K")
+    sheet.insert_rows(values=formatted_rows, row=start_row, value_input_option=ValueInputOption.raw, inherit_from_before=True)
 
 
-    end_row = start_row + len(formatted_rows) - 1
-    if start_row == end_row:
-        checkbox_range = f"J{start_row}"
-    else:
-        checkbox_range = f"J{start_row}:J{end_row}"
-        
-    sheet.add_validation(
-        checkbox_range,
-        ValidationConditionType.boolean,
-        []
-    )
+
     print(f"Данные успешно добавлены: {len(rows)} строк!")
 
 
 
-my_data = [{'Отметка времени': '21.07.2026 22:33:05', 'Дата (образец 27.04.2026)': '21.07.2026', 'Канал обращения клиента': 'Telegram', 'От кого поступил запрос': 'Клиент', 'Обращение': 'Просьба выполнить задачу до 31.07.2026 г.', 'Документы': '', 'Приоритет выполнения задачи для исполнителя': 'Нет', 'Наименование клиента': 'Малуева А.А. ИП', 'Столбец 8': None, 'Отметка о постановки задачи': False, 'Ссылка на задачу в битрикс': None}]
+my_data = [{'Отметка времени': '27.07.2026 14:33:19', 'Дата (образец 27.04.2026)': '27.07.2026', 'Канал обращения клиента': 'Telegram', 'От кого поступил запрос': 'Клиент', 'Обращение': 'А номер наш же должен быть', 'Документы': '', 'Приоритет выполнения задачи для исполнителя': 'Нет', 'Наименование клиента': 'Автопрайм ООО', 'Столбец 8': None, 'Отметка о постановки задачи': False, 'Ссылка на задачу в битрикс': None}]
 
 if __name__ == "__main__":
     asyncio.run(insert_row_to_google_sheet(my_data, "./ai/info/bids-project-502021-d03d48f79611.json", "Регистрация обращений клиентов (Ответы)"))

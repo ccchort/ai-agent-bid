@@ -53,7 +53,7 @@ async def check_user_sessions_job():
                 await db.update_db(UserSession, filters={"user_id": session.get("user_id", None)}, update_data={"actual": False})
                 continue
 
-            insert_row_to_google_sheet(
+            await insert_row_to_google_sheet(
                 data,
                 json_key_path="./ai/info/bids-project-502021-d03d48f79611.json",
                 spreadsheet_name="Регистрация обращений клиентов (Ответы)"
