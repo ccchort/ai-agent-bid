@@ -23,7 +23,7 @@ async def generate(data: dict) -> list[dict]:
     )
 
     sdk.setup_default_logging()
-    model = sdk.chat.completions('yandexgpt-5-lite')
+    model = sdk.chat.completions('yandexgpt-5-pro')
 
     sender_type, exact_client_name = match_company(data.get('client_name'), clients_list, partners_list)
     final_name_to_save = exact_client_name if exact_client_name else data.get('client_name')
