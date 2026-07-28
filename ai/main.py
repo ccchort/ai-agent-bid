@@ -22,7 +22,6 @@ async def get_stale_user_sessions() -> list[dict]:
     """
     rows = await DataBase.get_from_db(
         UserSession,
-        filters={"actual": True},
         where_clauses=[
             UserSession.last_message_at < text("CURRENT_TIMESTAMP - INTERVAL '3 minutes'")
         ]
@@ -50,7 +49,6 @@ async def check_user_sessions_job():
             data = await generate(session)
             if not data:
                 print(f"AI returned no data for user_id={session.get('user_id')}; session kept for retry")
-                await db.update_db(UserSession, filters={"user_id": session.get("user_id", None)}, update_data={"actual": False})
                 continue
 
             await insert_row_to_google_sheet(
