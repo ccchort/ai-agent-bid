@@ -3,6 +3,19 @@ import traceback
 from yandex_ai_studio_sdk import AsyncAIStudio
 from config import config
 
+
+def build_fallback_payload(data: dict) -> list[dict]:
+    """Возвращает запасной вариант, если модель ответила пустым списком."""
+    text = (data.get('accumulated_text') or '').strip()
+    if not text:
+        return []
+
+    return [{
+        "Обращение": " ".join(text.split()),
+        "Документы": "",
+        "Приоритет выполнения задачи для исполнителя": "Нет",
+    }]
+
 from ai.info.clients import clients_list, partners_list
 from utils.extract import match_company, clean_json_str
 from utils.collector import correct_data
@@ -42,7 +55,8 @@ async def generate(data: dict) -> list[dict]:
                         "Правила для полей объекта:\n"
                         "- 'Обращение': суть заявки клиента.\n"
                         "- 'Документы': ссылка на Google Документы, если она есть в тексте, иначе пустая строка \"\".\n"
-                        "- 'Приоритет выполнения задачи для исполнителя': напиши 'Да', если клиент просит сделать срочно/быстрее, или 'Нет', если спешки нет.\n\n"
+                        "- 'Приоритет выполнения задачи для исполнителя': Правила приоритета \n"
+                        "'Да' - если просят загрузить платежки, счета на оплату, сделать закрывающие документы, сделать универсальный передаточный документ(упд), сделать счет на оплату, прием сотрудника, увольнение сотрудника, отпуска сотрудника , все кадровые мероприятия. В остальных случаях 'Нет'\n\n"
                         "ОБРАЗЕЦ ОТВЕТА (СТРОГО СОБЛЮДАЙ ЭТОТ ФОРМАТ):\n"
                         "[\n"
                         "  {\n"
@@ -51,7 +65,8 @@ async def generate(data: dict) -> list[dict]:
                         "    \"Приоритет выполнения задачи для исполнителя\": \"Да\"\n"
                         "  }\n"
                         "]\n\n"
-                        "Если сами сообщения не несут в себе никакого смысла или не содержат заявок, возвращай пустой список []."
+                        "Если сообщения не несут явной заявки, но всё же содержат хоть какой-то смысл (например, просьба, вопрос, описание задачи), верни один объект с кратким пересказом текста. "
+                        "Не возвращай пустой список для обычного сообщения клиента."
                     )
                 },
                 {
@@ -87,7 +102,11 @@ async def generate(data: dict) -> list[dict]:
     }
 
     try:
-        result = await model.run(context)
+        try:
+            result = await model.run(context, response_format=response_format)
+        except TypeError:
+            result = await model.run(context)
+        print("РЕЗУЛЬТАТ", result)
     except Exception:
         print("AI SDK exception traceback:")
         traceback.print_exc()
@@ -100,8 +119,16 @@ async def generate(data: dict) -> list[dict]:
     if not result.text:
         return []
 
-    
-    payload = clean_json_str(result.text)
+    try:
+        payload = clean_json_str(result.text)
+    except Exception as exc:
+        print("Не удалось распарсить JSON от модели:", exc)
+        payload = build_fallback_payload(data)
+
+    if isinstance(payload, list) and not payload:
+        print("Модель вернула пустой список, использую fallback")
+        payload = build_fallback_payload(data)
+
     payload = correct_data(data, payload, sender_type, final_name_to_save)
 
     if isinstance(payload, list) and len(payload) == 1 and isinstance(payload[0], dict):
@@ -113,5 +140,5 @@ async def generate(data: dict) -> list[dict]:
 
 # Запуск асинхронного цикла
 if __name__ == "__main__":
-    result = asyncio.run(generate({'id': 16, 'user_id': 1414952718, 'platform': 'Telegram', 'accumulated_text': 'Желательно. Если не получиться, то просим на неделе до 31.07.2026 г. Налог УСН у вас оплачен в полном размере.', 'created_at': '2026-07-21 22:33:05 +0400', 'last_message_at': '2026-07-21 22:44:33 +0400', 'client_name': 'ИП Малуева. Бухгалтерия'}))
+    result = asyncio.run(generate({'id': 16, 'user_id': 1414952718, 'platform': 'Max', 'accumulated_text': 'Добрый день! Декларация эта? Спасибо, Наталья, иду в налоговую Налог отправлнен', 'created_at': '2026-07-21 22:33:05 +0400', 'last_message_at': '2026-07-21 22:44:33 +0400', 'client_name': 'Бухгалтерия ИП Ватрушкин'}))
     print(result)
