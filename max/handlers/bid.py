@@ -15,10 +15,11 @@ async def cmd_start(event: MessageCreated):
 @bid.message_created(F.message.body.text)
 async def bid_msg(event: MessageCreated):
     user_id = event.message.sender.user_id if event.message.sender else None
+    print("USER_ID", user_id)
     if user_id is None:
         return
 
-    if user_id in [524968097, 477017355, 275156033, 389322967]:
+    if user_id in [20814816]:
         return
 
     accum_text = await db.get_from_db(UserSession, filters={"user_id": user_id})
