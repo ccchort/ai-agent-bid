@@ -19,7 +19,7 @@ async def bid_msg(event: MessageCreated):
     if user_id is None:
         return
 
-    if user_id in [20814816]:
+    if user_id in [20814816, 236025600, 221618858, 107974518]:
         return
 
     accum_text = await db.get_from_db(UserSession, filters={"user_id": user_id})
