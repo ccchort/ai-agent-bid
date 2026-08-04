@@ -1,6 +1,7 @@
 import re
 import json
 from rapidfuzz import process, fuzz
+from ai.info.clients import *
 
 def clean_for_matching(name: str) -> str:
     """
@@ -16,9 +17,9 @@ def clean_for_matching(name: str) -> str:
     name = re.sub(r'\b(бухгалтерия|групп|группа|компания|фирма)\b', ' ', name)
     
     # 2. Удаляем организационные формы
-    name = re.sub(r'\b(ип|ооо|зао|оао|гск|ooo|ltd|co|ано|до|удпо)\b', ' ', name)
     
     # 3. Удаляем одиночные инициалы (например: 'а.в.', 'н.н.', 'и.', 'а.')
+    name = re.sub(r'\b([а-яa-z])\.\s*([а-яa-z])\.', r'\1\2', name)
     # Этот паттерн уберет 'а.в.', 'а. в.' и просто одиночные буквы ' а ' после удаления точек
     name = re.sub(r'\b[а-яa-z]\b\.?', ' ', name)
     
@@ -83,3 +84,6 @@ def clean_json_str(ai_response):
     clean = ai_response.strip().strip("`").replace("json\n", "").strip()
     result = json.loads(clean)
     return result
+
+if __name__ == "__main__":
+    print(match_company("300 груп", clients_list, partners_list))
