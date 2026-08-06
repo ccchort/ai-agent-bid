@@ -86,4 +86,4 @@ def clean_json_str(ai_response):
     return result
 
 if __name__ == "__main__":
-    print(match_company("300 груп", clients_list, partners_list))
+    print(match_company("ЛЗ САМЗАС", clients_list, partners_list))

@@ -48,7 +48,7 @@ async def check_user_sessions_job():
         try:
             data = await generate(session)
             if not data:
-                print(f"AI returned no data for user_id={session.get('user_id')}; session kept for retry")
+                await db.delete_from_db(UserSession, filters={"user_id": session.get("user_id", None)})
                 continue
 
             await insert_row_to_google_sheet(
@@ -57,6 +57,7 @@ async def check_user_sessions_job():
                 spreadsheet_name="Регистрация обращений клиентов (Ответы)"
             )
             await db.delete_from_db(UserSession, filters={"user_id": session.get("user_id", None)})
+
         except Exception:
             print(f"check_user_sessions_job failed for user_id={session.get('user_id')}")
             traceback.print_exc()
