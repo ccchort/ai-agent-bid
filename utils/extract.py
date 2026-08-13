@@ -35,6 +35,10 @@ def match_company(client_name_from_chat: str, clients_list: list, partners_list:
     Возвращает КОРТЕЖ: (Тип_отправителя, Оригинальное_название_из_списка)
     Если совпадений нет, возвращает ("", "")
     """
+    if client_name_from_chat == "SITO бухгалтерия 2026":
+        return ("Клиент", "ИП Степанов А.Ю.")
+    if client_name_from_chat == "ИП Степанов Дмитрий Бухгалтерия":
+        return ("Клиент", "Степанов Д.В. ИП")
     cleaned_chat = clean_for_matching(client_name_from_chat)
     if not cleaned_chat:
         return "", ""
