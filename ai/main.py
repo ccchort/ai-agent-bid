@@ -60,9 +60,13 @@ async def check_user_sessions_job():
             if bot_token and manager_chat_id:
                 message = make_message_to_managers(data)
                 request = Request(
-                    f"https://api.telegram.org/bot{bot_token}/sendMessage",
-                    data=urlencode({"chat_id": manager_chat_id, "text": message}).encode(),
-                    parse_mode="HTML", method="POST",
+                    f"https://lingering-mountain-4634.egorilyasov2006.workers.dev/bot{bot_token}/sendMessage",
+                    data=urlencode({"chat_id": manager_chat_id, "text": message, "parse_mode": "HTML"}).encode(),
+                    headers={
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "User-Agent": "aiogram/3.x",
+                    },
+                    method="POST",
                 )
                 await asyncio.to_thread(urlopen, request)
 
