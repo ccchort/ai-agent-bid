@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     postgres_host: SecretStr
     ai_api_key: SecretStr
     ai_folder_id: SecretStr
+    manager_chat_id: SecretStr
+    sales_chat_id: SecretStr
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
 
 config = Settings()

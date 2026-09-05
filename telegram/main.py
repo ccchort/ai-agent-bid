@@ -23,8 +23,6 @@ async def main():
         base="https://lingering-mountain-4634.egorilyasov2006.workers.dev/bot{token}/{method}",
         file="https://lingering-mountain-4634.egorilyasov2006.workers.dev/bot{token}/{method}"
     )
-    test_url = CUSTOM_API_SERVER.api_url(token=config.telegram_bot_token.get_secret_value(), method="getMe")
-    print(f"DEBUG_BOT_URL: {test_url}", flush=True)
     session = AiohttpSession(api=CUSTOM_API_SERVER)
     bot = Bot(token=config.telegram_bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML), session=session)
     

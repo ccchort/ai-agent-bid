@@ -41,11 +41,13 @@ async def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, work
             data_dict.get("Наименование клиента", ""),
             data_dict.get("Столбец 8", ""),
             data_dict.get("Отметка о постановки задачи", False),
-            data_dict.get("Ссылка на задачу в битрикс", "")
+            data_dict.get("Ссылка на задачу в битрикс", ""),
+            False,
+            False
         ]
         formatted_rows.append(row_data)
 
-    sheet.insert_rows(values=formatted_rows, row=start_row, value_input_option=ValueInputOption.raw, inherit_from_before=True)
+    sheet.insert_rows(values=formatted_rows, row=start_row, value_input_option=ValueInputOption.user_entered, inherit_from_before=True)
 
 
 
@@ -56,4 +58,4 @@ async def insert_row_to_google_sheet(data, json_key_path, spreadsheet_name, work
 my_data = [{'Отметка времени': '27.07.2026 14:33:19', 'Дата (образец 27.04.2026)': '27.07.2026', 'Канал обращения клиента': 'Telegram', 'От кого поступил запрос': 'Клиент', 'Обращение': 'А номер наш же должен быть', 'Документы': '', 'Приоритет выполнения задачи для исполнителя': 'Нет', 'Наименование клиента': 'Автопрайм ООО', 'Столбец 8': None, 'Отметка о постановки задачи': False, 'Ссылка на задачу в битрикс': None}]
 
 if __name__ == "__main__":
-    asyncio.run(insert_row_to_google_sheet(my_data, "./ai/info/bids-project-502021-d03d48f79611.json", "Регистрация обращений клиентов (Ответы)"))
+    asyncio.run(insert_row_to_google_sheet(my_data, "./ai/info/tender-415619-63538cc57fc8.json", "Регистрация обращений клиентов (Ответы)"))
